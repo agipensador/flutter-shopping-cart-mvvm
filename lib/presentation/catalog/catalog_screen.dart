@@ -156,7 +156,14 @@ class _ProductTile extends StatelessWidget {
                       onPressed: () async {
                         try {
                           final added = await viewModel.addToCart(product);
-                          if (!added && context.mounted) {
+                          if (added && context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Produto adicionado'),
+                                backgroundColor: AppColors.primary,
+                              ),
+                            );
+                          } else if (!added && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Você não pode adicionar mais itens'), backgroundColor: AppColors.secondary),
                             );
@@ -169,7 +176,7 @@ class _ProductTile extends StatelessWidget {
                           }
                         }
                       },
-                      child: const Text('Adicionar'),
+                      child: const Text('Adicionar\nao carrinho'),
                     )
                   : Row(
                       mainAxisSize: MainAxisSize.min,

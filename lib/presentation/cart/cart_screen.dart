@@ -8,6 +8,7 @@ import '../../core/routes/app_routes.dart';
 import '../../domain/cart_store.dart';
 import '../../domain/models/cart_item.dart';
 import '../../shared/widgets/app_button.dart';
+import '../../shared/widgets/delete_item_confirmation_dialog.dart';
 import 'cart_viewmodel.dart';
 
 class CartScreen extends StatelessWidget {
@@ -82,23 +83,25 @@ class CartScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     AppButton(
-                      label: viewModel.isCheckoutLoading ? 'Finalizando...' : 'Finalizar',
-                      onPressed: viewModel.isCheckoutLoading
-                          ? null
-                          : () async {
+                      label: 'Finalizar',
+                      isLoading: viewModel.isCheckoutLoading,
+                      onPressed: () async {
                               final result = await viewModel.checkout();
                               if (!context.mounted) return;
                               result.when(
                                 success: (_) {
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    AppRoutes.orderComplete,
-                                    (_) => false,
+                                    AppRoutes.checkoutAnimation,
+                                    (route) => route.isFirst,
                                   );
                                 },
-                                failure: (error) {
+                                failure: (_) {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text(error)),
+                                    const SnackBar(
+                                      content: Text('Ops, tente novamente'),
+                                      backgroundColor: Colors.grey,
+                                    ),
                                   );
                                 },
                               );
@@ -126,55 +129,82 @@ class _CartItemTile extends StatelessWidget {
     final viewModel = context.read<CartViewModel>();
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: Image.network(
-          item.product.imageUrl,
-          width: 56,
-          height: 56,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
-        ),
-        title: Text(item.product.title),
-        subtitle: Text(
-          'R\$ ${item.product.price.toStringAsFixed(2)} x ${item.quantity} = R\$ ${item.subtotal.toStringAsFixed(2)}',
-        ),
-        trailing: viewModel.cartStore.isFinalized
-            ? null
-            : Row(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              item.product.imageUrl,
+              width: 56,
+              height: 56,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                    icon: const Icon(Icons.remove),
-                    onPressed: () async {
-                      try {
-                        await viewModel.decrementQuantity(item.product, item.quantity);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-                          );
-                        }
-                      }
-                    },
+                  Text(
+                    item.product.title,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  Text('${item.quantity}'),
-                  IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () async {
-                      try {
-                        await viewModel.incrementQuantity(item.product, item.quantity);
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-                          );
-                        }
-                      }
-                    },
+                  Text(
+                    'R\$ ${item.product.price.toStringAsFixed(2)} x ${item.quantity} = R\$ ${item.subtotal.toStringAsFixed(2)}',
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            if (!viewModel.cartStore.isFinalized)
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove),
+                        onPressed: () async {
+                          try {
+                            await viewModel.decrementQuantity(item.product, item.quantity);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                      Text('${item.quantity}'),
+                      IconButton(
+                        icon: const Icon(Icons.add),
+                        onPressed: () async {
+                          try {
+                            await viewModel.incrementQuantity(item.product, item.quantity);
+                          } catch (e) {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ],
                   ),
                   IconButton(
-                    icon: const Icon(Icons.delete),
+                    icon: const Icon(Icons.delete, color: AppColors.secondary),
                     onPressed: () async {
+                      final confirmed = await DeleteItemConfirmationDialog.show(
+                        context,
+                        item.product.title,
+                      );
+                      if (!context.mounted || confirmed != true) return;
                       try {
                         await viewModel.removeItem(item.product);
                       } catch (e) {
@@ -188,6 +218,8 @@ class _CartItemTile extends StatelessWidget {
                   ),
                 ],
               ),
+          ],
+        ),
       ),
     );
   }
