@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/routes/app_routes.dart';
+import '../../domain/cart_store.dart';
 import '../../shared/widgets/app_button.dart';
 
 class OrderCompleteScreen extends StatelessWidget {
@@ -20,22 +22,20 @@ class OrderCompleteScreen extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Text('Pedido Completo'),
-            AppButton(
-              label: 'Novo pedido',
-              onPressed: () {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  AppRoutes.catalog,
-                  (_) => false,
-                );
-              },
-            ),
-          ],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: AppButton(
+            label: 'Novo pedido',
+            onPressed: () {
+              context.read<CartStore>().clear();
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.catalog,
+                (_) => false,
+              );
+            },
+          ),
         ),
       ),
     );

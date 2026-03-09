@@ -5,7 +5,7 @@ import '../../presentation/cart/cart_screen.dart';
 import '../../presentation/order_complete/order_complete_screen.dart';
 
 abstract final class AppRoutes {
-  static const String catalog = '/catalog';
+  static const String catalog = '/';
   static const String cart = '/cart';
   static const String orderComplete = '/order-complete';
 

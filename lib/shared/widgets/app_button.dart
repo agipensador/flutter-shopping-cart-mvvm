@@ -7,10 +7,12 @@ class AppButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.onPressed,
+    this.backgroundColor,
   });
 
   final String label;
   final VoidCallback? onPressed;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class AppButton extends StatelessWidget {
       child: ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: backgroundColor ?? AppColors.tertiary,
         foregroundColor: Colors.white,
         side: const BorderSide(width: 2),
         shadowColor: Colors.transparent,
