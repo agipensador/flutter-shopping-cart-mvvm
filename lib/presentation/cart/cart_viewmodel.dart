@@ -23,6 +23,19 @@ class CartViewModel extends ChangeNotifier {
   bool _isCheckoutLoading = false;
   bool get isCheckoutLoading => _isCheckoutLoading;
 
+  double _shippingCost = 0;
+  double get shippingCost => _shippingCost;
+
+  void setShippingCost(double value) {
+    _shippingCost = value;
+    notifyListeners();
+  }
+
+  void clearShipping() {
+    _shippingCost = 0;
+    notifyListeners();
+  }
+
   Future<void> incrementQuantity(Product product, int currentQuantity) async {
     if (_cartStore.isFinalized) return;
     final result = await _cartApi.updateQuantity(product.id, currentQuantity + 1);

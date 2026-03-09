@@ -5,6 +5,9 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/routes/app_routes.dart';
 import '../../domain/cart_store.dart';
+import '../cart/cart_viewmodel.dart';
+import '../../shared/widgets/cart_item_tile.dart';
+import 'order_complete_viewmodel.dart';
 import '../../shared/widgets/app_button.dart';
 
 class OrderCompleteScreen extends StatelessWidget {
@@ -12,6 +15,7 @@ class OrderCompleteScreen extends StatelessWidget {
 
   void _goToCatalogWithEmptyCart(BuildContext context) {
     context.read<CartStore>().clear();
+    context.read<CartViewModel>().clearShipping();
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.catalog,
@@ -44,31 +48,119 @@ class OrderCompleteScreen extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.white),
         ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+          child: Consumer<OrderCompleteViewModel>(
+            builder: (context, viewModel, _) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'Parabéns, seu pedido foi concluído com sucesso',
+                      style: AppTextStyles.title.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Pode ficar tranquilo, já estamos enviando seu pedido para seu endereço!',
+                      style: AppTextStyles.body.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    ...viewModel.items.map((item) => CartItemTile(item: item)),
+                    const SizedBox(height: 24),
+                    _ResumoSection(
+                      subtotal: viewModel.subtotal,
+                      shipping: viewModel.shipping,
+                      total: viewModel.total,
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Clique no botão abaixo para seguir para nosso catálogo!',
+                      style: AppTextStyles.body.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 24),
+                    AppButton(
+                      label: 'Novo pedido',
+                      onPressed: () => _goToCatalogWithEmptyCart(context),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ResumoSection extends StatelessWidget {
+  const _ResumoSection({
+    required this.subtotal,
+    required this.shipping,
+    required this.total,
+  });
+
+  final double subtotal;
+  final double shipping;
+  final double total;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        border: Border.all(width: 2, color: Colors.white24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Subtotal:',
+                style: AppTextStyles.body.copyWith(color: Colors.white),
+              ),
+              Text(
+                'R\$ ${subtotal.toStringAsFixed(2)}',
+                style: AppTextStyles.body.copyWith(color: Colors.white),
+              ),
+            ],
+          ),
+          if (shipping > 0) ...[
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Parabéns, seu pedido foi concluído com sucesso',
-                  style: AppTextStyles.title.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'Pode ficar tranquilo, já estamos enviando seu pedido para seu endereço!\n\nClique no botão abaixo para seguir para nosso catálogo!',
+                  'Frete:',
                   style: AppTextStyles.body.copyWith(color: Colors.white),
-                  textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 32),
-                AppButton(
-                  label: 'Novo pedido',
-                  onPressed: () => _goToCatalogWithEmptyCart(context),
+                Text(
+                  'R\$ ${shipping.toStringAsFixed(2)}',
+                  style: AppTextStyles.body.copyWith(color: Colors.white),
                 ),
               ],
             ),
+          ],
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Total:',
+                style: AppTextStyles.title.copyWith(color: Colors.white),
+              ),
+              Text(
+                'R\$ ${total.toStringAsFixed(2)}',
+                style: AppTextStyles.title.copyWith(color: Colors.white),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }

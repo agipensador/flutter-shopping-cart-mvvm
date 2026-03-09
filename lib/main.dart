@@ -7,6 +7,7 @@ import 'domain/cart_store.dart';
 import 'presentation/catalog/catalog_viewmodel.dart';
 import 'data/services/checkout_api.dart';
 import 'presentation/cart/cart_viewmodel.dart';
+import 'presentation/order_complete/order_complete_viewmodel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +28,12 @@ class MyApp extends StatelessWidget {
           create: (context) => CartViewModel(
             cartStore: context.read<CartStore>(),
             checkoutApi: CheckoutApi(),
+          ),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => OrderCompleteViewModel(
+            cartStore: context.read<CartStore>(),
+            cartViewModel: context.read<CartViewModel>(),
           ),
         ),
       ],

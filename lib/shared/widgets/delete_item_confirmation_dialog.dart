@@ -19,11 +19,13 @@ class DeleteItemConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final titleColor = Theme.of(context).textTheme.titleLarge?.color ??
+        Theme.of(context).colorScheme.onSurface;
     return AlertDialog(
       title: const Text('Excluir item'),
       content: Text(
         'Tem certeza que deseja excluir $productName do seu carrinho?',
-        style: AppTextStyles.body,
+        style: AppTextStyles.body.copyWith(color: titleColor),
       ),
       actions: [
         TextButton(
