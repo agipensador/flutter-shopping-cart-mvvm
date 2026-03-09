@@ -42,7 +42,7 @@ class CartScreen extends StatelessWidget {
               return Center(
                 child: Text(
                   'Carrinho vazio',
-                  style: AppTextStyles.body.copyWith(color: Colors.white),
+                  style: AppTextStyles.body,
                 ),
               );
             }
@@ -73,11 +73,11 @@ class CartScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Itens: ${cartStore.totalItemCount}',
-                          style: AppTextStyles.body.copyWith(color: Colors.white),
+                          style: AppTextStyles.body,
                         ),
                         Text(
                           'Subtotal: ${PriceHelper.format(cartStore.total)}',
-                          style: AppTextStyles.body.copyWith(color: Colors.white),
+                          style: AppTextStyles.body,
                         ),
                       ],
                     ),
@@ -93,7 +93,7 @@ class CartScreen extends StatelessWidget {
                             onPressed: () {
                               CepBottomSheet.show(
                                 context,
-                                onCalculated: () => viewModel.setShippingCost(30),
+                                onCalculated: () => viewModel.setDeliveryPrice(30),
                               );
                             },
                             style: ElevatedButton.styleFrom(
@@ -108,14 +108,14 @@ class CartScreen extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            if (viewModel.shippingCost > 0)
+                            if (viewModel.deliveryPrice > 0)
                               Text(
-                                '+ ${PriceHelper.format(viewModel.shippingCost)}',
-                                style: AppTextStyles.body.copyWith(color: Colors.white),
+                                '+ ${PriceHelper.format(viewModel.deliveryPrice)}',
+                                style: AppTextStyles.body,
                               ),
                             Text(
-                              'Total: ${PriceHelper.format(cartStore.total + viewModel.shippingCost)}',
-                              style: AppTextStyles.title.copyWith(color: Colors.white),
+                              'Total: ${PriceHelper.format(cartStore.total + viewModel.deliveryPrice)}',
+                              style: AppTextStyles.title,
                             ),
                           ],
                         ),
@@ -191,8 +191,8 @@ class CartScreen extends StatelessWidget {
       context,
       items: cartStore.items,
       subtotal: cartStore.total,
-      shipping: viewModel.shippingCost,
-      total: cartStore.total + viewModel.shippingCost,
+      shipping: viewModel.deliveryPrice,
+      total: cartStore.total + viewModel.deliveryPrice,
       onBackToCart: () => Navigator.pop(context),
       onContinue: () => _runCheckout(context, viewModel),
     );

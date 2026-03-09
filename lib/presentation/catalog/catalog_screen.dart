@@ -93,7 +93,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                   children: [
                     Text(
                       'OPS! Erro ao carregar o App',
-                      style: AppTextStyles.body.copyWith(color: Colors.white),
+                      style: AppTextStyles.body,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),

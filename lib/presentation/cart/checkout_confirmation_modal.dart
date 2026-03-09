@@ -13,7 +13,7 @@ class CheckoutConfirmationModal extends StatelessWidget {
     super.key,
     required this.items,
     required this.subtotal,
-    required this.shipping,
+    required this.delivery,
     required this.total,
     required this.onBackToCart,
     required this.onContinue,
@@ -21,7 +21,7 @@ class CheckoutConfirmationModal extends StatelessWidget {
 
   final List<CartItem> items;
   final double subtotal;
-  final double shipping;
+  final double delivery;
   final double total;
   final VoidCallback onBackToCart;
   final VoidCallback onContinue;
@@ -42,7 +42,7 @@ class CheckoutConfirmationModal extends StatelessWidget {
       builder: (context) => CheckoutConfirmationModal(
         items: items,
         subtotal: subtotal,
-        shipping: shipping,
+        delivery: shipping,
         total: total,
         onBackToCart: onBackToCart,
         onContinue: onContinue,

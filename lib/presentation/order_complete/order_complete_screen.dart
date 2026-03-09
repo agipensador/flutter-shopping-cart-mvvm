@@ -57,13 +57,13 @@ class OrderCompleteScreen extends StatelessWidget {
                   children: [
                     Text(
                       'Parabéns, seu pedido foi concluído com sucesso',
-                      style: AppTextStyles.title.copyWith(color: Colors.white),
+                      style: AppTextStyles.title,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Pode ficar tranquilo, já estamos enviando seu pedido para seu endereço!',
-                      style: AppTextStyles.body.copyWith(color: Colors.white),
+                      style: AppTextStyles.body,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
@@ -75,7 +75,7 @@ class OrderCompleteScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     Text(
                       'Clique no botão abaixo para seguir para nosso catálogo!',
-                      style: AppTextStyles.body.copyWith(color: Colors.white),
+                      style: AppTextStyles.body,
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
@@ -120,11 +120,11 @@ class _ResumoSection extends StatelessWidget {
             children: [
               Text(
                 'Subtotal:',
-                style: AppTextStyles.body.copyWith(color: Colors.white),
+                style: AppTextStyles.body,
               ),
               Text(
                 PriceHelper.format(subtotal),
-                style: AppTextStyles.body.copyWith(color: Colors.white),
+                style: AppTextStyles.body,
               ),
             ],
           ),
@@ -135,11 +135,11 @@ class _ResumoSection extends StatelessWidget {
               children: [
                 Text(
                   'Frete:',
-                  style: AppTextStyles.body.copyWith(color: Colors.white),
+                  style: AppTextStyles.body,
                 ),
                 Text(
                   PriceHelper.format(shipping),
-                  style: AppTextStyles.body.copyWith(color: Colors.white),
+                  style: AppTextStyles.body,
                 ),
               ],
             ),
@@ -150,11 +150,11 @@ class _ResumoSection extends StatelessWidget {
             children: [
               Text(
                 'Total:',
-                style: AppTextStyles.title.copyWith(color: Colors.white),
+                style: AppTextStyles.title,
               ),
               Text(
                 PriceHelper.format(total),
-                style: AppTextStyles.title.copyWith(color: Colors.white),
+                style: AppTextStyles.title,
               ),
             ],
           ),

@@ -23,16 +23,16 @@ class CartViewModel extends ChangeNotifier {
   bool _isCheckoutLoading = false;
   bool get isCheckoutLoading => _isCheckoutLoading;
 
-  double _shippingCost = 0;
-  double get shippingCost => _shippingCost;
+  double _deliveryPrice = 0;
+  double get deliveryPrice => _deliveryPrice;
 
-  void setShippingCost(double value) {
-    _shippingCost = value;
+  void setDeliveryPrice(double value) {
+    _deliveryPrice = value;
     notifyListeners();
   }
 
   void clearShipping() {
-    _shippingCost = 0;
+    _deliveryPrice = 0;
     notifyListeners();
   }
 

@@ -1,0 +1,2 @@
+# Configuração dos testes - reporter expanded mostra mais detalhes por teste
+reporter: expanded

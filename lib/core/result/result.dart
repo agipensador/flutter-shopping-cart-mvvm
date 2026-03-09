@@ -1,3 +1,4 @@
+// normalmente utilizo dartz, Either (right/left - success/failure)
 sealed class Result<T> {
   const Result();
   factory Result.success(T data) => Success(data);

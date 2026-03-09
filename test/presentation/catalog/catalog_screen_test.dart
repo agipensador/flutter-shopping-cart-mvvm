@@ -64,6 +64,8 @@ Widget buildTestWidget({List<Product> products = const []}) {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   const testProduct = Product(
     id: 1,
     title: 'Test Product',

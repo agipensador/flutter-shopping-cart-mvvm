@@ -59,6 +59,12 @@ fvm flutter build apk   # Android
 fvm flutter build ios   # iOS
 ```
 
+**Testes:**
+```bash
+fvm flutter test test/widget_test.dart
+fvm flutter test test/presentation/catalog/catalog_screen_test.dart
+```
+
 > **Versão do Flutter:** 3.24.5 (definida em `.fvmrc`)
 
 ---
