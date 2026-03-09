@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../domain/models/cart_item.dart';
+import '../helpers/price_helper.dart';
+import 'quantity_selector.dart';
 
 class CartItemTile extends StatelessWidget {
   const CartItemTile({
     super.key,
     required this.item,
+    this.onIncrement,
+    this.onDecrement,
+    this.onRemove,
   });
 
   final CartItem item;
+  final VoidCallback? onIncrement;
+  final VoidCallback? onDecrement;
+  final VoidCallback? onRemove;
+
+  bool get _isEditable =>
+      onIncrement != null && onDecrement != null && onRemove != null;
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +49,30 @@ class CartItemTile extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   Text(
-                    'R\$ ${item.product.price.toStringAsFixed(2)} x ${item.quantity} = R\$ ${item.subtotal.toStringAsFixed(2)}',
+                    '${PriceHelper.format(item.product.price)} x ${item.quantity} = ${PriceHelper.format(item.subtotal)}',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
               ),
             ),
+            if (_isEditable) ...[
+              const SizedBox(width: 8),
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  QuantitySelector(
+                    quantity: item.quantity,
+                    onDecrement: onDecrement!,
+                    onIncrement: onIncrement!,
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.delete),
+                    onPressed: onRemove,
+                    color: AppColors.secondary,
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),

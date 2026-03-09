@@ -5,12 +5,16 @@ import '../../core/result/result.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/routes/app_routes.dart';
+import '../../shared/helpers/price_helper.dart';
 import '../../shared/helpers/snackbar_helper.dart';
 import '../../domain/cart_store.dart';
+import '../../domain/models/cart_item.dart';
 import '../../shared/widgets/app_button.dart';
 import '../../shared/widgets/cart_item_tile.dart';
 import '../../shared/widgets/cep_bottom_sheet.dart';
+import '../../shared/widgets/delete_item_confirmation_dialog.dart';
 import 'cart_viewmodel.dart';
+import 'checkout_confirmation_modal.dart';
 
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
@@ -50,7 +54,12 @@ class CartScreen extends StatelessWidget {
                   itemCount: cartStore.items.length,
                   itemBuilder: (context, index) {
                     final item = cartStore.items[index];
-                    return CartItemTile(item: item);
+                    return CartItemTile(
+                      item: item,
+                      onIncrement: () => _incrementItem(context, viewModel, item),
+                      onDecrement: () => _decrementItem(context, viewModel, item),
+                      onRemove: () => _removeItem(context, viewModel, item),
+                    );
                   },
                 ),
               ),
@@ -67,7 +76,7 @@ class CartScreen extends StatelessWidget {
                           style: AppTextStyles.body.copyWith(color: Colors.white),
                         ),
                         Text(
-                          'Subtotal: R\$ ${cartStore.total.toStringAsFixed(2)}',
+                          'Subtotal: ${PriceHelper.format(cartStore.total)}',
                           style: AppTextStyles.body.copyWith(color: Colors.white),
                         ),
                       ],
@@ -101,11 +110,11 @@ class CartScreen extends StatelessWidget {
                           children: [
                             if (viewModel.shippingCost > 0)
                               Text(
-                                '+ R\$ ${viewModel.shippingCost.toStringAsFixed(2)}',
+                                '+ ${PriceHelper.format(viewModel.shippingCost)}',
                                 style: AppTextStyles.body.copyWith(color: Colors.white),
                               ),
                             Text(
-                              'Total: R\$ ${(cartStore.total + viewModel.shippingCost).toStringAsFixed(2)}',
+                              'Total: ${PriceHelper.format(cartStore.total + viewModel.shippingCost)}',
                               style: AppTextStyles.title.copyWith(color: Colors.white),
                             ),
                           ],
@@ -115,23 +124,11 @@ class CartScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     AppButton(
                       label: 'Finalizar',
-                      isLoading: viewModel.isCheckoutLoading,
-                      onPressed: () async {
-                              final result = await viewModel.checkout();
-                              if (!context.mounted) return;
-                              result.when(
-                                success: (_) {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    AppRoutes.checkoutAnimation,
-                                    (route) => route.isFirst,
-                                  );
-                                },
-                                failure: (_) {
-                                  SnackBarHelper.showNeutral(context, 'Ops, tente novamente');
-                                },
-                              );
-                            },
+                      onPressed: () => _openCheckoutModal(
+                        context,
+                        cartStore,
+                        viewModel,
+                      ),
                     ),
                   ],
                 ),
@@ -142,6 +139,106 @@ class CartScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _incrementItem(
+    BuildContext context,
+    CartViewModel viewModel,
+    CartItem item,
+  ) async {
+    try {
+      await viewModel.incrementQuantity(item.product, item.quantity);
+    } catch (e) {
+      if (context.mounted) {
+        SnackBarHelper.showError(
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+        );
+      }
+    }
+  }
+
+  Future<void> _decrementItem(
+    BuildContext context,
+    CartViewModel viewModel,
+    CartItem item,
+  ) async {
+    if (item.quantity == 1) {
+      final confirmed = await DeleteItemConfirmationDialog.show(
+        context,
+        item.product.title,
+      );
+      if (!context.mounted || confirmed != true) return;
+    }
+    try {
+      await viewModel.decrementQuantity(item.product, item.quantity);
+    } catch (e) {
+      if (context.mounted) {
+        SnackBarHelper.showError(
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+        );
+      }
+    }
+  }
+
+  void _openCheckoutModal(
+    BuildContext context,
+    CartStore cartStore,
+    CartViewModel viewModel,
+  ) {
+    CheckoutConfirmationModal.show(
+      context,
+      items: cartStore.items,
+      subtotal: cartStore.total,
+      shipping: viewModel.shippingCost,
+      total: cartStore.total + viewModel.shippingCost,
+      onBackToCart: () => Navigator.pop(context),
+      onContinue: () => _runCheckout(context, viewModel),
+    );
+  }
+
+  Future<void> _runCheckout(
+    BuildContext context,
+    CartViewModel viewModel,
+  ) async {
+    final result = await viewModel.checkout();
+    if (!context.mounted) return;
+    result.when(
+      success: (_) {
+        Navigator.pop(context);
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.checkoutAnimation,
+          (route) => route.isFirst,
+        );
+      },
+      failure: (error) {
+        SnackBarHelper.showError(context, error);
+      },
+    );
+  }
+
+  Future<void> _removeItem(
+    BuildContext context,
+    CartViewModel viewModel,
+    CartItem item,
+  ) async {
+    final confirmed = await DeleteItemConfirmationDialog.show(
+      context,
+      item.product.title,
+    );
+    if (!context.mounted || confirmed != true) return;
+    try {
+      await viewModel.removeItem(item.product);
+    } catch (e) {
+      if (context.mounted) {
+        SnackBarHelper.showError(
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+        );
+      }
+    }
   }
 }
 

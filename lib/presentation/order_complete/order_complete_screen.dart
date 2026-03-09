@@ -3,10 +3,10 @@ import 'package:provider/provider.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../shared/helpers/price_helper.dart';
 import '../../core/routes/app_routes.dart';
 import '../../domain/cart_store.dart';
 import '../cart/cart_viewmodel.dart';
-import '../../shared/widgets/cart_item_tile.dart';
 import 'order_complete_viewmodel.dart';
 import '../../shared/widgets/app_button.dart';
 
@@ -67,8 +67,6 @@ class OrderCompleteScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 24),
-                    ...viewModel.items.map((item) => CartItemTile(item: item)),
-                    const SizedBox(height: 24),
                     _ResumoSection(
                       subtotal: viewModel.subtotal,
                       shipping: viewModel.shipping,
@@ -125,7 +123,7 @@ class _ResumoSection extends StatelessWidget {
                 style: AppTextStyles.body.copyWith(color: Colors.white),
               ),
               Text(
-                'R\$ ${subtotal.toStringAsFixed(2)}',
+                PriceHelper.format(subtotal),
                 style: AppTextStyles.body.copyWith(color: Colors.white),
               ),
             ],
@@ -140,7 +138,7 @@ class _ResumoSection extends StatelessWidget {
                   style: AppTextStyles.body.copyWith(color: Colors.white),
                 ),
                 Text(
-                  'R\$ ${shipping.toStringAsFixed(2)}',
+                  PriceHelper.format(shipping),
                   style: AppTextStyles.body.copyWith(color: Colors.white),
                 ),
               ],
@@ -155,7 +153,7 @@ class _ResumoSection extends StatelessWidget {
                 style: AppTextStyles.title.copyWith(color: Colors.white),
               ),
               Text(
-                'R\$ ${total.toStringAsFixed(2)}',
+                PriceHelper.format(total),
                 style: AppTextStyles.title.copyWith(color: Colors.white),
               ),
             ],

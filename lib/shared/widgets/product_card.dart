@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../domain/models/product.dart';
+import '../helpers/price_helper.dart';
 
 class ProductCard extends StatelessWidget {
   const ProductCard({
@@ -27,7 +28,7 @@ class ProductCard extends StatelessWidget {
           errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
         ),
         title: Text(product.title),
-        subtitle: Text('R\$ ${product.price.toStringAsFixed(2)}'),
+        subtitle: Text(PriceHelper.format(product.price)),
         trailing: Container(
           decoration: BoxDecoration(
             color: Colors.white,
