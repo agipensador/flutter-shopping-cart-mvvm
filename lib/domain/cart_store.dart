@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import 'models/cart.dart';
 import 'models/cart_item.dart';
 import 'models/product.dart';
 
@@ -9,9 +10,14 @@ class CartStore extends ChangeNotifier {
   final List<CartItem> _items = [];
   bool _isFinalized = false;
 
-  List<CartItem> get items => List.unmodifiable(_items);
-  bool get isFinalized => _isFinalized;
-  int get distinctCount => _items.length;
+  Cart get cart => Cart(
+        items: List.unmodifiable(_items),
+        isFinalized: _isFinalized,
+      );
+
+  List<CartItem> get items => cart.items;
+  bool get isFinalized => cart.isFinalized;
+  int get distinctCount => cart.distinctCount;
 
   int getQuantity(int productId) {
     final item = _items.where((e) => e.product.id == productId).firstOrNull;
@@ -65,6 +71,6 @@ class CartStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  double get total => _items.fold(0, (sum, item) => sum + item.subtotal);
-  int get totalItemCount => _items.fold(0, (sum, item) => sum + item.quantity);
+  double get total => cart.total;
+  int get totalItemCount => cart.totalItemCount;
 }

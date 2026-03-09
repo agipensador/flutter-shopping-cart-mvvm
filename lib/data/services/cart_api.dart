@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import '../../core/result/result.dart';
+
 class CartApi {
   CartApi() : _random = Random();
 
@@ -7,24 +9,27 @@ class CartApi {
   static const Duration _delay = Duration(milliseconds: 300);
   static const double _errorChance = 0.15;
 
-  Future<void> addItem(int productId, int quantity) async {
+  Future<Result<bool>> addItem(int productId, int quantity) async {
     await Future.delayed(_delay);
     if (_random.nextDouble() < _errorChance) {
-      throw Exception('Erro ao adicionar item');
+      return Result.failure('Erro ao adicionar item');
     }
+    return Result.success(true);
   }
 
-  Future<void> removeItem(int productId) async {
+  Future<Result<bool>> removeItem(int productId) async {
     await Future.delayed(_delay);
     if (_random.nextDouble() < _errorChance) {
-      throw Exception('Erro ao remover item');
+      return Result.failure('Erro ao remover item');
     }
+    return Result.success(true);
   }
 
-  Future<void> updateQuantity(int productId, int quantity) async {
+  Future<Result<bool>> updateQuantity(int productId, int quantity) async {
     await Future.delayed(_delay);
     if (_random.nextDouble() < _errorChance) {
-      throw Exception('Erro ao atualizar quantidade');
+      return Result.failure('Erro ao atualizar quantidade');
     }
+    return Result.success(true);
   }
 }

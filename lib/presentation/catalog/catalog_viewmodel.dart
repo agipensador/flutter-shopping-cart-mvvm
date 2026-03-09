@@ -1,3 +1,4 @@
+import 'package:app_carrinho_de_compras/core/result/result.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../data/services/cart_api.dart';
@@ -32,29 +33,33 @@ class CatalogViewModel extends ChangeNotifier {
     _error = null;
     notifyListeners();
 
-    try {
-      _products = await _api.getProducts();
-      _error = null;
-    } catch (e) {
-      _products = [];
-      _error = e.toString();
-    } finally {
-      _isLoading = false;
-      notifyListeners();
-    }
+    final result = await _api.getProducts();
+    result.when(
+      success: (data) {
+        _products = data;
+        _error = null;
+      },
+      failure: (error) {
+        _products = [];
+        _error = error;
+      },
+    );
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<bool> addToCart(Product product) async {
     if (!_cartStore.canAddProduct(product.id)) {
       return false;
     }
-    try {
-      await _cartApi.addItem(product.id, 1);
-      _cartStore.addItem(product, 1);
-      return true;
-    } catch (_) {
-      rethrow;
-    }
+    final result = await _cartApi.addItem(product.id, 1);
+    return result.when(
+      success: (_) {
+        _cartStore.addItem(product, 1);
+        return true;
+      },
+      failure: (error) => throw Exception(error),
+    );
   }
 
   Future<bool> incrementQuantity(Product product) async {
@@ -65,25 +70,32 @@ class CatalogViewModel extends ChangeNotifier {
     if (currentQty == 0) {
       return addToCart(product);
     }
-    try {
-      await _cartApi.updateQuantity(product.id, currentQty + 1);
-      _cartStore.updateQuantity(product.id, currentQty + 1);
-      return true;
-    } catch (_) {
-      rethrow;
-    }
+    final result = await _cartApi.updateQuantity(product.id, currentQty + 1);
+    return result.when(
+      success: (_) {
+        _cartStore.updateQuantity(product.id, currentQty + 1);
+        return true;
+      },
+      failure: (error) => throw Exception(error),
+    );
   }
 
   Future<void> decrementQuantity(Product product) async {
     final currentQty = _cartStore.getQuantity(product.id);
     if (currentQty <= 0) return;
     if (currentQty == 1) {
-      await _cartApi.removeItem(product.id);
-      _cartStore.removeItem(product.id);
+      final result = await _cartApi.removeItem(product.id);
+      result.when(
+        success: (_) => _cartStore.removeItem(product.id),
+        failure: (error) => throw Exception(error),
+      );
       return;
     }
-    await _cartApi.updateQuantity(product.id, currentQty - 1);
-    _cartStore.updateQuantity(product.id, currentQty - 1);
+    final result = await _cartApi.updateQuantity(product.id, currentQty - 1);
+    result.when(
+      success: (_) => _cartStore.updateQuantity(product.id, currentQty - 1),
+      failure: (error) => throw Exception(error),
+    );
   }
 }
 

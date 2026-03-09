@@ -5,6 +5,7 @@ import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'domain/cart_store.dart';
 import 'presentation/catalog/catalog_viewmodel.dart';
+import 'data/services/checkout_api.dart';
 import 'presentation/cart/cart_viewmodel.dart';
 
 void main() {
@@ -23,7 +24,10 @@ class MyApp extends StatelessWidget {
           create: (context) => CatalogViewModel(cartStore: context.read<CartStore>()),
         ),
         ChangeNotifierProvider(
-          create: (context) => CartViewModel(cartStore: context.read<CartStore>()),
+          create: (context) => CartViewModel(
+            cartStore: context.read<CartStore>(),
+            checkoutApi: CheckoutApi(),
+          ),
         ),
       ],
       child: MaterialApp(

@@ -1,3 +1,4 @@
+import 'package:app_carrinho_de_compras/core/result/result.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -28,18 +29,19 @@ class CartScreen extends StatelessWidget {
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SafeArea(child: Consumer<CartStore>(
-        builder: (context, cartStore, _) {
-          if (cartStore.items.isEmpty) {
-            return Center(
-              child: Text(
-                'Carrinho vazio',
-                style: AppTextStyles.body.copyWith(color: Colors.white),
-              ),
-            );
-          }
-          return Column(
-            children: [
+      body: SafeArea(
+        child: Consumer2<CartStore, CartViewModel>(
+          builder: (context, cartStore, viewModel, _) {
+            if (cartStore.items.isEmpty) {
+              return Center(
+                child: Text(
+                  'Carrinho vazio',
+                  style: AppTextStyles.body.copyWith(color: Colors.white),
+                ),
+              );
+            }
+            return Column(
+              children: [
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -80,23 +82,36 @@ class CartScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     AppButton(
-                      label: 'Finalizar',
-                      onPressed: () {
-                        cartStore.finalize();
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          AppRoutes.orderComplete,
-                          (_) => false,
-                        );
-                      },
+                      label: viewModel.isCheckoutLoading ? 'Finalizando...' : 'Finalizar',
+                      onPressed: viewModel.isCheckoutLoading
+                          ? null
+                          : () async {
+                              final result = await viewModel.checkout();
+                              if (!context.mounted) return;
+                              result.when(
+                                success: (_) {
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    AppRoutes.orderComplete,
+                                    (_) => false,
+                                  );
+                                },
+                                failure: (error) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(error)),
+                                  );
+                                },
+                              );
+                            },
                     ),
                   ],
                 ),
               ),
             ],
-          );
-        },
-      )),
+            );
+          },
+        ),
+      ),
     );
   }
 }

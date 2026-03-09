@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:http/http.dart' as http;
 
+import '../../core/result/result.dart';
 import '../dtos/product_dto.dart';
 import '../../domain/models/product.dart';
 
@@ -17,18 +18,23 @@ class ProductsApi {
   final http.Client _client;
   final Random _random = Random();
 
-  Future<List<Product>> getProducts() async {
+  Future<Result<List<Product>>> getProducts() async {
     await Future.delayed(_delay);
     if (_random.nextDouble() < _errorChance) {
-      throw Exception('Erro ao carregar produtos');
+      return Result.failure('Erro ao carregar produtos');
     }
-    final response = await _client.get(Uri.parse('$_baseUrl/products'));
-    if (response.statusCode != _successStatus) {
-      throw Exception('Erro ao carregar produtos');
+    try {
+      final response = await _client.get(Uri.parse('$_baseUrl/products'));
+      if (response.statusCode != _successStatus) {
+        return Result.failure('Erro ao carregar produtos');
+      }
+      final list = json.decode(response.body) as List<dynamic>;
+      final products = list
+          .map((e) => ProductDto.fromJson(e as Map<String, dynamic>).toEntity())
+          .toList();
+      return Result.success(products);
+    } catch (e) {
+      return Result.failure(e.toString().replaceFirst('Exception: ', ''));
     }
-    final list = json.decode(response.body) as List<dynamic>;
-    return list
-        .map((e) => ProductDto.fromJson(e as Map<String, dynamic>).toEntity())
-        .toList();
   }
 }
