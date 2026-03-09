@@ -1,3 +1,7 @@
+# Flutter/Dart
+.dart_tool/
+.packages
+
 # Gradle files
 .gradle/
 build/
@@ -32,3 +36,5 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+READMEM.MD
