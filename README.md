@@ -1,82 +1,90 @@
 # App Carrinho de Compras
 
-App Flutter de carrinho de compras em **MVVM**, com tema brutalista (bordas marcantes, azul e vermelho). Suporta Android e iOS.
+Um app de carrinho de compras feito em Flutter, com arquitetura MVVM, gerenciamento de estado **ChangeNotifier** e padrões como **Command/Result**.
+O visual segue um tema **brutalista** (bordas marcantes, azul e vermelho) e o app roda em Android e iOS.
 
-## Requisitos
 
-- **Flutter** 3.x
-- **Dart** 3.10+
-- Android Studio / Xcode (para emuladores)
+## O que o app faz
+
+### 1. Catálogo de produtos
+O usuário vê uma lista de produtos vindos da [Fake Store API](https://fakestoreapi.com/products), com imagem, nome e preço. É possível adicionar itens ao carrinho, aumentar ou diminuir a quantidade e remover. Um ícone no topo mostra quantos produtos diferentes estão no carrinho.
+
+### 2. Carrinho
+O carrinho lista os itens com controles de quantidade (+/−) e botão para remover. Há resumo com subtotal, opção de calcular frete por CEP e total final. Ao clicar em **Finalizar**, abre um modal para revisar o pedido antes de concluir.
+
+### 3. Confirmação do pedido
+O modal exibe os itens em modo somente leitura, o total e dois botões: **Voltar para o carrinho** ou **Continuar compra**. Ao continuar, o app chama a API de checkout (simulada) e, em caso de sucesso, segue para a animação e a tela de pedido concluído.
+
+### 4. Pedido concluído
+Tela final com mensagem de sucesso, resumo (subtotal, frete, total) e botão **Novo pedido** ou voltar, que limpa o carrinho e volta ao catálogo.
+
+---
+
+## Demonstração
+
+Segue um GIF do app mostrando como ficou o código final:
+
+![Demo do App](assets/demo.gif)
+
+---
 
 ## Como rodar
 
-```bash
-# Instalar dependências
-flutter pub get
+O projeto usa **FVM** (Flutter Version Management) para garantir que todos usem a mesma versão do Flutter.
 
-# Rodar no dispositivo/emulador
-flutter run
-```
-
-## Build
+### 1. Instale o FVM (se ainda não tiver)
 
 ```bash
-# Android
-flutter build apk
-
-# iOS
-flutter build ios
+dart pub global activate fvm
 ```
 
-## Arquitetura
+Certifique-se de que `~/.pub-cache/bin` está no seu `PATH`.
 
-O app segue o padrão **MVVM** com separação clara de responsabilidades:
+### 2. Instale a versão do Flutter do projeto
 
+```bash
+fvm install
 ```
-lib/
-├── core/                    # Infraestrutura compartilhada
-│   ├── result/              # Result<T> (Success/Failure) para operações assíncronas
-│   ├── routes/              # Rotas nomeadas
-│   └── theme/               # Cores, tipografia, tema brutalista
-├── shared/                  # Componentes e helpers reutilizáveis
-│   ├── helpers/             # SnackBarHelper, etc.
-│   └── widgets/             # AppButton, ProductCard, CartItemTile, etc.
-├── data/                    # Camada de dados
-│   ├── dtos/                # ProductDto
-│   └── services/            # ProductsApi, CartApi, CheckoutApi, CepStorage
-├── domain/                  # Regras de negócio
-│   ├── models/              # Product, CartItem, Cart
-│   └── cart_store.dart      # Estado global do carrinho (ChangeNotifier)
-├── presentation/            # Telas e ViewModels
-│   ├── catalog/
-│   ├── cart/
-│   ├── checkout_animation/
-│   └── order_complete/
+
+### 3. Rode o app
+
+```bash
+fvm flutter pub get
+fvm flutter run
 ```
+
+**Build:**
+```bash
+fvm flutter build apk   # Android
+fvm flutter build ios   # iOS
+```
+
+> **Versão do Flutter:** 3.24.5 (definida em `.fvmrc`)
+
+---
+
+## Estrutura do projeto
+
+O app segue **MVVM** com camadas bem definidas:
+
+| Camada | O que faz |
+|--------|-----------|
+| **core/** | Rotas, tema, `Result<T>` para operações assíncronas |
+| **shared/** | Helpers (SnackBar, formatação de preço) e widgets reutilizáveis |
+| **data/** | APIs (Products, Cart, Checkout), DTOs e persistência (CEP) |
+| **domain/** | Modelos (Product, CartItem, Cart) e CartStore (estado global) |
+| **presentation/** | Telas e ViewModels (Catalog, Cart, OrderComplete) |
 
 ### Fluxo de dados
-
-- **CartStore**: fonte única de verdade do carrinho. Não depende de API; a orquestração é feita no ViewModel.
-- **ViewModels**: consomem APIs (ProductsApi, CartApi, CheckoutApi), tratam Result e atualizam o CartStore.
-- **View**: observa `Consumer`/`Provider` e reage às mudanças.
-
-### Padrão Command/Result
-
-Todas as operações assíncronas retornam `Result<T>`:
-
-- `Success(data)` — operação bem-sucedida
-- `Failure(error)` — mensagem de erro para o usuário
-
-O ViewModel converte para exceções ou estados, e a View exibe SnackBars/erros de forma padronizada via `SnackBarHelper`.
+- **CartStore** é a fonte única de verdade do carrinho e não depende de API.
+- **ViewModels** chamam as APIs, tratam `Result` e atualizam o CartStore.
+- A **View** usa `Consumer`/`Provider` e reage às mudanças.
 
 ### Regras de negócio
-
-- Máximo de 10 produtos distintos no carrinho
-- Carrinho não é editável após finalização
-- Edição de quantidade apenas no catálogo; no carrinho a lista é somente leitura
+- Máximo de 10 produtos diferentes no carrinho.
+- Carrinho não pode ser editado após finalização.
+- Preços formatados no padrão brasileiro (R$ 1.234,56).
 
 ### Tema brutalista
-
-- Bordas: `BorderSide(width: 2.0)`
-- Cores: azul (#093578), vermelho (#900000), ciano (#00A0A3)
-- Contraste forte entre fundos e bordas
+- Bordas grossas (`BorderSide(width: 2.0)`).
+- Cores: azul (#093578), vermelho (#900000), ciano (#00A0A3).

@@ -1,3 +1,6 @@
+# FVM
+.fvm/
+
 # Flutter/Dart
 .dart_tool/
 .packages
@@ -38,5 +41,3 @@ google-services.json
 
 # Android Profiling
 *.hprof
-
-READMEM.MD
