@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="app_carrinho_de_compras"
+        android:label="Carrinho"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
