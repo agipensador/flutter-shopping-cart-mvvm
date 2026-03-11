@@ -89,7 +89,7 @@ O app segue **MVVM** com camadas bem definidas:
 ### Regras de negócio
 - Máximo de 10 produtos diferentes no carrinho.
 - Carrinho não pode ser editado após finalização.
-- Preços formatados no padrão brasileiro (R$ 1.234,56).
+- Preços formatados no padrão brasileiro (R$ xx,xx).
 
 ### Tema brutalista
 - Bordas grossas (`BorderSide(width: 2.0)`).
