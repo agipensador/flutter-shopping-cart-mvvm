@@ -34,7 +34,7 @@ class ProductsApi {
           .toList();
       return Result.success(products);
     } catch (e) {
-      return Result.failure(e.toString().replaceFirst('Exception: ', ''));
+      return Result.failure(e.toString().replaceFirst('Exception: ao carregar produtos $e', ''));
     }
   }
 }

@@ -16,6 +16,7 @@ class OrderCompleteViewModel extends ChangeNotifier {
 
   List<CartItem> get items => _cartStore.items;
   double get subtotal => _cartStore.total;
-  double get shipping => _cartViewModel.deliveryPrice;
-  double get total => subtotal + shipping;
+  // shipping ajustado para delivery para manter padrão do projeto 
+  double get delivery => _cartViewModel.deliveryPrice;
+  double get total => subtotal + delivery;
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../core/result/result.dart';
 import '../../data/services/cep_storage.dart';
 import 'app_button.dart';
 
@@ -47,15 +48,22 @@ class _CepBottomSheetState extends State<CepBottomSheet> {
   }
 
   Future<void> _loadSavedCep() async {
-    try {
-      final savedCep = await _cepStorage.getCep();
-      if (mounted && savedCep != null && savedCep.isNotEmpty) {
-        _cepController.text = savedCep;
-        setState(() {});
-      }
-    } catch (_) {
-      // SharedPreferences pode falhar (ex: hot reload, plugin não registrado)
-    }
+    final result = await _cepStorage.getCep();
+    result.when(
+      success: (savedCep) {
+        if (mounted && savedCep != null && savedCep.isNotEmpty) {
+          _cepController.text = savedCep;
+          setState(() {});
+        }
+      },
+      failure: (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error)),
+          );
+        }
+      },
+    );
   }
 
   @override
@@ -78,9 +86,20 @@ class _CepBottomSheetState extends State<CepBottomSheet> {
   void _onCalculate() async {
     if (_formKey.currentState?.validate() ?? false) {
       final cep = _cepController.text.replaceAll(RegExp(r'\D'), '');
-      await _cepStorage.saveCep(cep);
-      widget.onCalculated();
-      if (mounted) Navigator.of(context).pop();
+      final result = await _cepStorage.saveCep(cep);
+      result.when(
+        success: (_) {
+          widget.onCalculated();
+          if (mounted) Navigator.of(context).pop();
+        },
+        failure: (error) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(error)),
+            );
+          }
+        },
+      );
     }
   }
 

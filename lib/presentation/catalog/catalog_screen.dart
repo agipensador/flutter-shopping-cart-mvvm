@@ -159,7 +159,7 @@ class _ProductTile extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ', ''));
+        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ao adicionar produto', ''));
       }
     }
   }
@@ -173,7 +173,7 @@ class _ProductTile extends StatelessWidget {
       await viewModel.decrementQuantity(product);
     } catch (e) {
       if (context.mounted) {
-        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ', ''));
+        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ao remover produto', ''));
       }
     }
   }
@@ -187,7 +187,7 @@ class _ProductTile extends StatelessWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ', ''));
+        SnackBarHelper.showError(context, e.toString().replaceFirst('Exception: ao aumentar quantidade', ''));
       }
     }
   }

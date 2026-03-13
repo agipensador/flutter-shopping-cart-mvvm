@@ -1,5 +1,5 @@
 {
-  "dart.flutterSdkPath": ".fvm/flutter_sdk",
+  "dart.flutterSdkPath": ".fvm/versions/3.38.9",
   "dart.cliConsole": "terminal",
   "dart.previewFlutterUiGuides": false
 }

@@ -15,7 +15,9 @@ class OrderCompleteScreen extends StatelessWidget {
 
   void _goToCatalogWithEmptyCart(BuildContext context) {
     context.read<CartStore>().clear();
-    context.read<CartViewModel>().clearShipping();
+    // Padronizei o nome do método para evitar confusão com o método clear() do CartStore
+    // e para melhorar a legibilidade do código
+    context.read<CartViewModel>().clearDeliveryPrice();
     Navigator.pushNamedAndRemoveUntil(
       context,
       AppRoutes.catalog,
@@ -69,7 +71,7 @@ class OrderCompleteScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                     _ResumoSection(
                       subtotal: viewModel.subtotal,
-                      shipping: viewModel.shipping,
+                      deliveryPrice: viewModel.delivery,
                       total: viewModel.total,
                     ),
                     const SizedBox(height: 24),
@@ -97,12 +99,12 @@ class OrderCompleteScreen extends StatelessWidget {
 class _ResumoSection extends StatelessWidget {
   const _ResumoSection({
     required this.subtotal,
-    required this.shipping,
+    required this.deliveryPrice,
     required this.total,
   });
 
   final double subtotal;
-  final double shipping;
+  final double deliveryPrice;
   final double total;
 
   @override
@@ -128,7 +130,7 @@ class _ResumoSection extends StatelessWidget {
               ),
             ],
           ),
-          if (shipping > 0) ...[
+          if (deliveryPrice > 0) ...[
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,7 +140,7 @@ class _ResumoSection extends StatelessWidget {
                   style: AppTextStyles.body,
                 ),
                 Text(
-                  PriceHelper.format(shipping),
+                  PriceHelper.format(deliveryPrice),
                   style: AppTextStyles.body,
                 ),
               ],

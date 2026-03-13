@@ -1,23 +1,29 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../core/result/result.dart';
+
 class CepStorage {
   static const String _keyUserCep = 'userCEP';
 
-  Future<String?> getCep() async {
+  Future<Result<String?>> getCep() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_keyUserCep);
-    } catch (_) {
-      return null;
+      final cep = prefs.getString(_keyUserCep);
+      return Result.success(cep);
+    } catch (e) {
+      // Com mais tempo, adicionei tratativas de erro
+      return Result.failure('Erro ao ler CEP salvo: $e');
     }
   }
 
-  Future<void> saveCep(String cep) async {
+  Future<Result<void>> saveCep(String cep) async {
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_keyUserCep, cep);
-    } catch (_) {
-      // Ignora falha ao salvar
+      return Result.success(null);
+    } catch (e) {
+      // Com mais tempo, adicionei tratativas de erro
+      return Result.failure('Erro ao salvar CEP: $e');
     }
   }
 }

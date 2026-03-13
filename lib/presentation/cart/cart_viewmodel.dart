@@ -31,7 +31,8 @@ class CartViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void clearShipping() {
+  // Ajustei para manter a consistência de deliveryPrice
+  void clearDeliveryPrice() {
     _deliveryPrice = 0;
     notifyListeners();
   }

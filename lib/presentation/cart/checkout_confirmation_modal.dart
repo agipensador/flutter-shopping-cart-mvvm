@@ -30,7 +30,7 @@ class CheckoutConfirmationModal extends StatelessWidget {
     BuildContext context, {
     required List<CartItem> items,
     required double subtotal,
-    required double shipping,
+    required double deliveryPrice,
     required double total,
     required VoidCallback onBackToCart,
     required VoidCallback onContinue,
@@ -42,7 +42,7 @@ class CheckoutConfirmationModal extends StatelessWidget {
       builder: (context) => CheckoutConfirmationModal(
         items: items,
         subtotal: subtotal,
-        delivery: shipping,
+        delivery: deliveryPrice,
         total: total,
         onBackToCart: onBackToCart,
         onContinue: onContinue,
